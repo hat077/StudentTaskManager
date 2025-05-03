@@ -1,0 +1,29 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>StudyFlow</title>
+    <link rel="stylesheet" href="{% static 'styles/style.css' %}">
+</head>
+<body>
+    <header>
+        <h1>StudyFlow</h1>
+        <nav>
+            <a id="nav-link" href="{% url 'home' %}">Home</a>
+            <a id="nav-link" href="{% url 'add_task' %}">Add Task</a>
+            <a id="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
+            {% if user.is_authenticated %}
+                <a id="nav-link" href="{% url 'logout' %}">Logout</a>
+            {% else %}
+                <a id="nav-link" href="{% url 'login' %}">Login</a> | 
+                <a id="nav-link" href="{% url 'register' %}">Register</a>
+            {% endif %}
+        </nav>
+    </header>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

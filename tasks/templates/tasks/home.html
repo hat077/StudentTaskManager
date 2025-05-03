@@ -1,0 +1,52 @@
+{% extends 'tasks/base.html' %}
+
+{% block content %}
+    <h2>Your Tasks</h2>
+    <div>
+        <form method="get" action="" id="sort-form">
+            <label for="sort">Sort by:</label>
+            <select name="sort" id="sort">
+                <option value="start_date" {% if sort == 'start_date' %}selected{% endif %}>Start Date</option>
+                <option value="due_date" {% if sort == 'due_date' %}selected{% endif %}>Due Date</option>
+                <option value="task_urgency" {% if sort == 'task_urgency' %}selected{% endif %}>Urgency</option>
+            </select>
+            <button type="submit">Sort</button>
+        </form>
+    </div>
+    <ul>
+        {% for item in task_data %}
+            {% with task=item.task days_left=item.days_left %}
+                <li class="{% if task.completed %}completed{% else %}pending{% endif %}">
+                    <strong>{{ task.title }}</strong><br>
+                    <em>{{ task.get_task_type_display }}</em><br>
+                    <p>{{ task.description }}</p>
+                    <p><strong>Start Date:</strong> {{ task.start_date|date:"Y-m-d" }}</p>
+                    <p><strong>Due Date:</strong> {{ task.due_date|date:"Y-m-d" }}</p>
+                    {% if days_left != None %}
+                        <p>
+                            {% if days_left > 0 %}
+                                <span style="color: #007bff;">{{ days_left }} day{{ days_left|pluralize }} left</span>
+                            {% elif days_left == 0 %}
+                                <span style="color: orange;">Due today</span>
+                            {% else %}
+                                <span style="color: red;">Overdue by {{ item.abs_days_left }} day{{ item.abs_days_left|pluralize }}</span>
+                            {% endif %}
+                        </p>
+                    {% endif %}
+                    <p><strong>Urgency:</strong> {{ task.get_task_urgency_display }}</p>
+                    <p>
+                        {% if task.completed %}
+                            <strong>Completed</strong>
+                        {% else %}
+                            <a href="{% url 'complete_task' task.id %}">Complete</a>
+                        {% endif %}
+                        <a href="{% url 'edit_task' task.id %}">Edit</a> |
+                        <a class="delete" href="{% url 'delete_task' task.id %}">Delete</a>
+                    </p> 
+                </li>
+            {% endwith %}
+        {% empty %}
+            <p>No tasks yet!</p>
+        {% endfor %}
+    </ul>
+{% endblock %}
